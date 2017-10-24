@@ -3,6 +3,7 @@
     "outDir": "./dist",
     "target": "es5",
     "module": "commonjs",
+    "experimentalDecorators": true,
     "noImplicityAny": true,
     "sourceMap": true,
     "jsx": "react",
@@ -15,6 +16,7 @@
     ]
   },
   "include": [
+    "./src/**/*.tsx",
     "./src/**/*.ts"
   ]
 }

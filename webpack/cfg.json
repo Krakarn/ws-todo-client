@@ -1,6 +1,7 @@
 {
   "paths": {
     "entry": "./src/index.tsx",
+    "src": "./src",
     "dist": "./dist",
     "outFile": "index.js"
   }
