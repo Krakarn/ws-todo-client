@@ -94,29 +94,42 @@ export interface ISubscribeUIComponentState {
 
   public render() {
     return (
-      <div>
-        <div>
-          <p>Status: <span
-            style={{
-              borderRadius: '100%',
-              border: '1px solid black',
-              backgroundColor: this.props.subscribeUI.connectionStatusColor,
-              width: '16px',
-              height: '16px',
-              display: 'inline-block',
-            }}
-            title={this.props.subscribeUI.connectionStatus}
-          ></span></p>
+      <div className='container'>
+        <div className='form-group row'>
+          <div className='col-2'>
+            {
+              this.props.subscribeUI.connected || this.props.subscribeUI.connecting ?
+                <button className='btn btn-danger' onClick={this.onClickDisconnect.bind(this)}>Disconnect</button> :
+                <button className='btn btn-success' onClick={this.onClickConnect.bind(this)}>Connect</button>
+            }
+          </div>
+          <div className='col-2'>
+            <p className='alert alert-light'>Status: <span
+              style={{
+                borderRadius: '100%',
+                border: '1px solid black',
+                backgroundColor: this.props.subscribeUI.connectionStatusColor,
+                width: '16px',
+                height: '16px',
+                display: 'inline-block',
+              }}
+              title={this.props.subscribeUI.connectionStatus}
+            ></span></p>
+          </div>
         </div>
-        <div>
+        <div className='form-group'>
           <form onSubmit={this.onSubmitCustom.bind(this)}>
-            <input
-              type='text'
-              disabled={!this.props.subscribeUI.connected}
-              value={this.state.customInputValue}
-              onChange={this.onCustomInputChange.bind(this)}
-            />
+            <div className='form-group'>
+              <input
+                className='form-control'
+                type='text'
+                disabled={!this.props.subscribeUI.connected}
+                value={this.state.customInputValue}
+                onChange={this.onCustomInputChange.bind(this)}
+              />
+            </div>
             <button
+              className='btn btn-secondary'
               type='submit'
               disabled={!this.props.subscribeUI.connected}
             >
@@ -124,46 +137,47 @@ export interface ISubscribeUIComponentState {
             </button>
           </form>
           <form onSubmit={this.onSubmitSubscribe.bind(this)}>
-            <div>
-              <label>Table:</label>
-              <input
-                type='text'
-                disabled={!this.props.subscribeUI.connected}
-                value={this.state.tableValue}
-                onChange={this.onTableInputChange.bind(this)}
-              />
-            </div>
-            <div>
-              <label>Filter:</label>
-              <input
-                type='text'
-                disabled={!this.props.subscribeUI.connected}
-                value={this.state.filterValue}
-                onChange={this.onFilterInputChange.bind(this)}
-              />
+            <div className='form-group row'>
+              <div className='col'>
+                <label>Table:</label>
+                <input
+                  className='form-control'
+                  type='text'
+                  disabled={!this.props.subscribeUI.connected}
+                  value={this.state.tableValue}
+                  onChange={this.onTableInputChange.bind(this)}
+                />
+              </div>
+              <div className='col'>
+                <label>Filter:</label>
+                <input
+                  className='form-control'
+                  type='text'
+                  disabled={!this.props.subscribeUI.connected}
+                  value={this.state.filterValue}
+                  onChange={this.onFilterInputChange.bind(this)}
+                />
+              </div>
             </div>
             <button
+              className='btn btn-primary'
               type='submit'
               disabled={!this.props.subscribeUI.connected}
             >Subscribe</button>
           </form>
         </div>
-        <div>
-          {
-            this.props.subscribeUI.connected || this.props.subscribeUI.connecting ?
-              <button onClick={this.onClickDisconnect.bind(this)}>Disconnect</button> :
-              <button onClick={this.onClickConnect.bind(this)}>Connect</button>
-          }
-        </div>
-        <p>{
-          this.props.subscribeUI.error ?
-            this.props.subscribeUI.error :
-            this.props.subscribeUI.waitingForResponse ?
-              'Waiting for response...' :
-              ''
-          }
-        </p>
-        <p>{this.props.subscribeUI.response}</p>
+        {this.props.subscribeUI.error ?
+          <p className='alert alert-danger'>{this.props.subscribeUI.error}</p> :
+          ''
+        }
+        {this.props.subscribeUI.waitingForResponse ?
+          <p className='alert alert-info'>'Waiting for response...'</p> :
+          ''
+        }
+        {this.props.subscribeUI.response ?
+          <p className='alert alert-success'>{this.props.subscribeUI.response}</p> :
+          ''
+        }
 
         <SubscriptionList
           subscriptions={this.props.subscribeUI.subscriptions}

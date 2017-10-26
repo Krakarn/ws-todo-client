@@ -13,7 +13,7 @@ export interface IAppComponentProps {
 @observer export class App extends React.Component<IAppComponentProps> {
   public render() {
     return (
-      <div>
+      <div className='container'>
         <SubscribeUI subscribeUI={this.props.app.subscribeUI} />
       </div>
     );
