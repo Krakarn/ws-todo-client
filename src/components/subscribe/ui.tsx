@@ -98,6 +98,14 @@ export interface ISubscribeUIComponentState {
     ss.splice(ss.indexOf(subscription), 1);
   }
 
+  public onDeleteItem<T extends {id: string}>(table: string, item: T) {
+    this.props.subscribeUI.sendMessage({
+      type: 'delete',
+      table: table,
+      id: item.id,
+    });
+  }
+
   public render() {
     return (
       <div className='container'>
@@ -198,6 +206,7 @@ export interface ISubscribeUIComponentState {
             <UserTable
               table={this.props.subscribeUI.tables.user}
               generateItem={item => <User user={item} />}
+              onDelete={this.onDeleteItem.bind(this, 'user')}
             />
           </div>
         </div>
