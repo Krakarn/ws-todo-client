@@ -5,14 +5,14 @@ import { observer } from 'mobx-react';
 import { Subscription } from '../../state/subscription';
 
 export interface ISubscriptionListComponentProps {
-  subscriptions: Subscription[];
-  unsubscribe(subscription: Subscription): void;
+  subscriptions: Subscription<any>[];
+  unsubscribe<T>(subscription: Subscription<T>): void;
 }
 
 @observer export class SubscriptionList extends React.Component<
   ISubscriptionListComponentProps
 > {
-  public onClickUnsubscribe(subscription: Subscription) {
+  public onClickUnsubscribe<T>(subscription: Subscription<T>) {
     this.props.unsubscribe(subscription);
   }
 
@@ -20,8 +20,8 @@ export interface ISubscriptionListComponentProps {
     return (
       <ul className='list-group'>
         {
-          this.props.subscriptions.map(subscription =>
-            <li className='list-group-item'><ul className='list-group'>
+          this.props.subscriptions.map((subscription, i) =>
+            <li className='list-group-item' key={i}><ul className='list-group'>
               <li className='list-group-item'>Id: {subscription.id}</li>
               <li className='list-group-item'>Table: {subscription.table}</li>
               {

@@ -4,8 +4,14 @@ import { observer } from 'mobx-react';
 
 import { SubscribeUIState } from '../../state/subscribe-ui';
 import { Subscription } from '../../state/subscription';
+import { UserState } from '../../state/user';
 
 import { SubscriptionList } from './subscription-list';
+import { Table } from './table';
+import { User } from './user';
+
+type UserTable = new () => Table<UserState>;
+const UserTable = Table as UserTable;
 
 export interface ISubscribeUIComponentProps {
   subscribeUI: SubscribeUIState;
@@ -81,7 +87,7 @@ export interface ISubscribeUIComponentState {
     });
   }
 
-  public unsubscribe(subscription: Subscription) {
+  public unsubscribe<T>(subscription: Subscription<T>) {
     this.props.subscribeUI.sendMessage({
       type: 'unsubscribe',
       subscriptionId: subscription.id,
@@ -179,10 +185,22 @@ export interface ISubscribeUIComponentState {
           ''
         }
 
-        <SubscriptionList
-          subscriptions={this.props.subscribeUI.subscriptions}
-          unsubscribe={this.unsubscribe.bind(this)}
-        />
+        <div className='row'>
+          <div className='col-6'>
+            <p>Subscriptions</p>
+            <SubscriptionList
+              subscriptions={this.props.subscribeUI.subscriptions}
+              unsubscribe={this.unsubscribe.bind(this)}
+            />
+          </div>
+          <div className='col-6'>
+            <p>Users</p>
+            <UserTable
+              table={this.props.subscribeUI.tables.user}
+              generateItem={item => <User user={item} />}
+            />
+          </div>
+        </div>
       </div>
     );
   }
