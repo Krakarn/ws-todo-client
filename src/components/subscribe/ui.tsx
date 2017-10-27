@@ -180,6 +180,7 @@ export interface ISubscribeUIComponentState {
             >Subscribe</button>
           </form>
         </div>
+
         {this.props.subscribeUI.error ?
           <p className='alert alert-danger'>{this.props.subscribeUI.error}</p> :
           ''
