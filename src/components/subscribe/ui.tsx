@@ -19,6 +19,7 @@ export interface ISubscribeUIComponentProps {
 
 export interface ISubscribeUIComponentState {
   customInputValue: string;
+  debugInputValue: string;
   tableValue: string;
   filterValue: string;
 }
@@ -32,6 +33,7 @@ export interface ISubscribeUIComponentState {
 
     this.state = {
       customInputValue: '',
+      debugInputValue: '',
       tableValue: '',
       filterValue: '',
     };
@@ -45,6 +47,19 @@ export interface ISubscribeUIComponentState {
     } catch(e) {
       this.props.subscribeUI.setError(e.message);
     }
+
+    return false;
+  }
+
+  public onSubmitDebug(e: Event) {
+    e.preventDefault();
+
+    const message = {
+      type: 'debug',
+      expression: this.state.debugInputValue,
+    };
+
+    this.props.subscribeUI.sendMessage(message);
 
     return false;
   }
@@ -72,6 +87,12 @@ export interface ISubscribeUIComponentState {
   public onCustomInputChange(event: Event) {
     this.setState({
       customInputValue: (event.target as HTMLInputElement).value,
+    });
+  }
+
+  public onDebugInputChange(event: Event) {
+    this.setState({
+      debugInputValue: (event.target as HTMLInputElement).value,
     });
   }
 
@@ -148,6 +169,24 @@ export interface ISubscribeUIComponentState {
               disabled={!this.props.subscribeUI.connected}
             >
               Send
+            </button>
+          </form>
+          <form onSubmit={this.onSubmitDebug.bind(this)}>
+            <div className='form-group'>
+              <input
+                className='form-control'
+                type='text'
+                disabled={!this.props.subscribeUI.connected}
+                value={this.state.debugInputValue}
+                onChange={this.onDebugInputChange.bind(this)}
+              />
+            </div>
+            <button
+              className='btn btn-secondary'
+              type='submit'
+              disabled={!this.props.subscribeUI.connected}
+            >
+              Send Debug
             </button>
           </form>
           <form onSubmit={this.onSubmitSubscribe.bind(this)}>
