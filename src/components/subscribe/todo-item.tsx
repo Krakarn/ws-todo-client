@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { observer } from 'mobx-react';
 
-import { TodoItemState } from '../../state/todo-item';
+import { TodoItemState } from '../../state/resource/todo-item';
 
 export interface ITodoItemComponentProps {
   todo: TodoItemState;

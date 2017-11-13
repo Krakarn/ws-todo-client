@@ -2,9 +2,10 @@ import * as React from 'react';
 
 import { observer } from 'mobx-react';
 
-import { SubscribeUIState } from '../../state/subscribe-ui';
+import { UserState } from '../../state/resource/user';
+import { ResourcesState } from '../../state/resources';
 import { Subscription } from '../../state/subscription';
-import { UserState } from '../../state/user';
+import { SubscribeUIState } from '../../state/ui/subscribe';
 
 import { SubscriptionList } from './subscription-list';
 import { Table } from './table';
@@ -15,6 +16,7 @@ const UserTable = Table as UserTable;
 
 export interface ISubscribeUIComponentProps {
   subscribeUI: SubscribeUIState;
+  resources: ResourcesState;
 }
 
 export interface ISubscribeUIComponentState {
@@ -43,9 +45,8 @@ export interface ISubscribeUIComponentState {
     try {
       e.preventDefault();
 
-      this.props.subscribeUI.sendMessage(JSON.parse(this.state.customInputValue));
+      this.props.resources.sendMessage(this.state.customInputValue);
     } catch(e) {
-      this.props.subscribeUI.setError(e.message);
     }
 
     return false;
@@ -59,7 +60,7 @@ export interface ISubscribeUIComponentState {
       expression: this.state.debugInputValue,
     };
 
-    this.props.subscribeUI.sendMessage(message);
+    this.props.resources.sendMessage(JSON.stringify(message));
 
     return false;
   }
@@ -67,21 +68,9 @@ export interface ISubscribeUIComponentState {
   public onSubmitSubscribe(e: Event) {
     e.preventDefault();
 
-    this.props.subscribeUI.sendMessage({
-      type: 'subscribe',
-      table: this.state.tableValue,
-      filter: this.state.filterValue,
-    });
+    this.props.resources.subscribe(this.state.tableValue, this.state.filterValue);
 
     return false;
-  }
-
-  public onClickConnect() {
-    this.props.subscribeUI.connect();
-  }
-
-  public onClickDisconnect() {
-    this.props.subscribeUI.disconnect();
   }
 
   public onCustomInputChange(event: Event) {
@@ -108,36 +97,22 @@ export interface ISubscribeUIComponentState {
     });
   }
 
-  public unsubscribe<T>(subscription: Subscription<T>) {
-    this.props.subscribeUI.sendMessage({
-      type: 'unsubscribe',
-      subscriptionId: subscription.id,
-    });
-
-    const ss = this.props.subscribeUI.subscriptions;
-
-    ss.splice(ss.indexOf(subscription), 1);
+  public unsubscribe<T>(subscription: Subscription) {
+    this.props.resources.unsubscribe(subscription);
   }
 
   public onDeleteItem<T extends {id: string}>(table: string, item: T) {
-    this.props.subscribeUI.sendMessage({
-      type: 'delete',
-      table: table,
-      id: item.id,
-    });
+    this.props.resources.delete(table, item.id);
+  }
+
+  public onUserChange(user: UserState) {
+    this.props.resources.update('user', user.json);
   }
 
   public render() {
     return (
-      <div className='container'>
+      <div>
         <div className='form-group row'>
-          <div className='col-2'>
-            {
-              this.props.subscribeUI.connected || this.props.subscribeUI.connecting ?
-                <button className='btn btn-danger' onClick={this.onClickDisconnect.bind(this)}>Disconnect</button> :
-                <button className='btn btn-success' onClick={this.onClickConnect.bind(this)}>Connect</button>
-            }
-          </div>
           <div className='col-2'>
             <p className='alert alert-light'>Status: <span
               style={{
@@ -221,15 +196,9 @@ export interface ISubscribeUIComponentState {
         </div>
 
         {this.props.subscribeUI.error ?
-          <p className='alert alert-danger'>{this.props.subscribeUI.error}</p> :
-          ''
-        }
-        {this.props.subscribeUI.waitingForResponse ?
-          <p className='alert alert-info'>'Waiting for response...'</p> :
-          ''
-        }
-        {this.props.subscribeUI.response ?
-          <p className='alert alert-success'>{this.props.subscribeUI.response}</p> :
+          <p className='alert alert-danger'>{
+            this.props.subscribeUI.error
+          }</p> :
           ''
         }
 
@@ -237,15 +206,15 @@ export interface ISubscribeUIComponentState {
           <div className='col-6'>
             <p>Subscriptions</p>
             <SubscriptionList
-              subscriptions={this.props.subscribeUI.subscriptions}
+              subscriptions={(this.props.resources as any).subscriptions}
               unsubscribe={this.unsubscribe.bind(this)}
             />
           </div>
           <div className='col-6'>
             <p>Users</p>
             <UserTable
-              table={this.props.subscribeUI.tables.user}
-              generateItem={item => <User user={item} />}
+              table={this.props.resources.tables.user}
+              generateItem={item => <User user={item} onChange={this.onUserChange.bind(this)} />}
               onDelete={this.onDeleteItem.bind(this, 'user')}
             />
           </div>

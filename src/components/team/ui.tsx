@@ -1,7 +1,9 @@
 import * as React from 'react';
 
-import { AppState } from '../../state/app';
-import { UserState } from '../../state/user';
+import { observer } from 'mobx-react';
+
+import { UserState } from '../../state/resource/user';
+import { TeamUIState } from '../../state/ui/team';
 
 export interface IUserComponentProps {
   user: UserState;
@@ -10,26 +12,35 @@ export interface IUserComponentProps {
 export interface IUserComponent extends React.Component<IUserComponentProps> {
 }
 
-export interface IUserComponentStatic {
-  new(): IUserComponent;
-}
-
 export interface ITeamUIComponentProps {
-  users: UserState[];
-  UserComponent: IUserComponentStatic;
+  state: TeamUIState;
+  generateUserComponent?(user: UserState): JSX.Element;
 }
 
-export class TeamUI extends React.Component<ITeamUIComponentProps> {
-  public render() {
-    const UserComponent = this.props.UserComponent;
+@observer export class TeamUI extends React.Component<ITeamUIComponentProps> {
+  public static defaultProps: Partial<ITeamUIComponentProps> = {
+    generateUserComponent: user => (
+      <ul key={user.id} className='list-group'>
+        <li className='list-group-item'>
+          <p className='col-3'>Name:</p>
+          <p className='col'>{user.name}</p>
+        </li>
+        <li className='list-group-item'>
+          <p className='col-3'>Todos:</p>
+          <p className='col'>{user.todos.length}</p>
+        </li>
+      </ul>
+    ),
+  };
 
+  public render() {
     return (
       <div>
         <h1>Team</h1>
         <ul className='list-group'>
           {
-            this.props.users.map(
-              user => <UserComponent user={user}></UserComponent>
+            this.props.state.users.map(
+              user => this.props.generateUserComponent(user)
             )
           }
         </ul>

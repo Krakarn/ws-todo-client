@@ -2,15 +2,21 @@ import * as React from 'react';
 
 import { observer } from 'mobx-react';
 
-import { UserState } from '../../state/user';
+import { UserState } from '../../state/resource/user';
 
 import { TodoItem } from './todo-item';
 
 export interface ITableItemComponentProps {
   user: UserState;
+  onChange(user: UserState): void;
 }
 
 @observer export class User extends React.Component<ITableItemComponentProps> {
+  public onNameChange(event: Event) {
+    this.props.user.name = (event.target as HTMLInputElement).value;
+    this.props.onChange(this.props.user);
+  }
+
   public render() {
     return (
       <ul className='list-group'>
@@ -20,7 +26,11 @@ export interface ITableItemComponentProps {
         </li>
         <li className='list-group-item'>
           <p className='col-3'>Name:</p>
-          <p className='col'>{this.props.user.name}</p>
+          <input
+            className='col'
+            value={this.props.user.name}
+            onChange={this.onNameChange.bind(this)}
+          />
         </li>
         {
           this.props.user.todos.map(todo =>

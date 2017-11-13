@@ -1,4 +1,4 @@
-export class Subscription<T> {
+export class Subscription {
   public readonly id: string;
   public readonly table: string;
   public readonly filter: string | void;

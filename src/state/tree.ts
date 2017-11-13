@@ -1,10 +1,6 @@
 import { action, computed, observable } from 'mobx';
 
-export interface ISearchTreeLeaf {
-  id: string;
-}
-
-export class BinarySearchTree<T extends ISearchTreeLeaf> {
+export class BinarySearchTree<T> {
   public readonly id: string;
 
   public leaf: T;
@@ -24,8 +20,16 @@ export class BinarySearchTree<T extends ISearchTreeLeaf> {
     this.rightChild = rightChild;
   }
 
-  public static fromList<T extends ISearchTreeLeaf>(
+  public static fromList<T>(
     list: T[],
+    getItemId: (item: T) => string,
+    compareIds: (leftId: string, rightId: string) => number = (lid, rid) =>
+      lid === rid ?
+        0 :
+        lid < rid ?
+          -1 :
+          1
+    ,
   ): BinarySearchTree<T> | null {
     if (list.length === 0) {
       return null;
@@ -34,16 +38,15 @@ export class BinarySearchTree<T extends ISearchTreeLeaf> {
     if (list.length === 1) {
       const node = list[0];
 
-      return new BinarySearchTree(node.id, node);
+      return new BinarySearchTree(getItemId(node), node);
     }
 
-    const sorted = list.slice().sort((i1, i2) =>
-      i1.id === i2.id ?
-        0 :
-        i1.id < i2.id ?
-          -1 :
-          1
-    );
+    const sorted = list.slice().sort((li, ri) => {
+      const lid = getItemId(li);
+      const rid = getItemId(ri);
+
+      return compareIds(lid, rid);
+    });
 
     const rootIndex = Math.floor(sorted.length / 2);
     const rootNode = sorted[rootIndex];
@@ -51,11 +54,11 @@ export class BinarySearchTree<T extends ISearchTreeLeaf> {
     const leftList = sorted.slice(0, rootIndex);
     const rightList = sorted.slice(rootIndex + 1);
 
-    const leftBST = BinarySearchTree.fromList(leftList);
-    const rightBST = BinarySearchTree.fromList(rightList);
+    const leftBST = BinarySearchTree.fromList(leftList, getItemId, compareIds);
+    const rightBST = BinarySearchTree.fromList(rightList, getItemId, compareIds);
 
     const root = new BinarySearchTree(
-      rootNode.id,
+      getItemId(rootNode),
       rootNode,
       leftBST,
       rightBST,
@@ -81,6 +84,7 @@ export class BinarySearchTree<T extends ISearchTreeLeaf> {
 
 export interface ITreeLeaf {
   id: string;
+  parent: Tree<ITreeLeaf>;
   parentId: string;
 }
 
@@ -89,14 +93,17 @@ export class Tree<T extends ITreeLeaf> implements ITreeLeaf {
 
   @observable public name: string;
   @observable public children: (T | Tree<T>)[];
-  @observable public parentId: string;
+  @observable public parent: Tree<T> | null;
 
-  @computed public get parent(): Tree<T> {
-    return this.indexedRoot.getNodeById(this.parentId) as Tree<T>;
+  @computed public get parentId(): string {
+    return this.parent && this.parent.id;
   }
-
-  public set parent(parent: Tree<T>) {
-    this.parentId = parent.id;
+  public set parentId(id: string | null) {
+    if (id === null) {
+      this.parent = null;
+    } else {
+      this.parent = this.indexedRoot.getNodeById(id) as Tree<T>;
+    }
   }
 
   @computed public get root(): Tree<T> {
@@ -108,13 +115,15 @@ export class Tree<T extends ITreeLeaf> implements ITreeLeaf {
   }
 
   @computed public get asFlattenedList(): (T | Tree<T>)[] {
-    return [].concat.apply([], this.children.map(
+    return [].concat.apply([this], this.children.map(
       child => {
         const t = child as Tree<T>;
-        const ts: (T | Tree<T>)[] = [t];
+        const ts: (T | Tree<T>)[] = [];
 
         if (t instanceof Tree) {
           return ts.concat(t.asFlattenedList);
+        } else {
+          ts.push(t);
         }
 
         return ts;
@@ -129,7 +138,16 @@ export class Tree<T extends ITreeLeaf> implements ITreeLeaf {
 
     const list = this.root.asFlattenedList;
 
-    return BinarySearchTree.fromList(list);
+    return BinarySearchTree.fromList(
+      list,
+      node => {
+        if (node instanceof Tree) {
+          return `${node.id}tree`;
+        } else {
+          return `${node.id}leaf`;
+        }
+      }
+    );
   }
 
   constructor(
@@ -141,6 +159,7 @@ export class Tree<T extends ITreeLeaf> implements ITreeLeaf {
     this.id = id;
     this.name = name;
     this.children = children.slice();
+    this.children.forEach(child => child.parent = this);
     this.parentId = parentId;
   }
 

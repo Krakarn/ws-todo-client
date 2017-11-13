@@ -5,14 +5,14 @@ import { observer } from 'mobx-react';
 import { Subscription } from '../../state/subscription';
 
 export interface ISubscriptionListComponentProps {
-  subscriptions: Subscription<any>[];
-  unsubscribe<T>(subscription: Subscription<T>): void;
+  subscriptions: Subscription[];
+  unsubscribe(subscription: Subscription): void;
 }
 
 @observer export class SubscriptionList extends React.Component<
   ISubscriptionListComponentProps
 > {
-  public onClickUnsubscribe<T>(subscription: Subscription<T>) {
+  public onClickUnsubscribe(subscription: Subscription) {
     this.props.unsubscribe(subscription);
   }
 
