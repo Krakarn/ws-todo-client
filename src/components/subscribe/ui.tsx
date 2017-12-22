@@ -98,7 +98,7 @@ export interface ISubscribeUIComponentState {
   }
 
   public unsubscribe<T>(subscription: Subscription) {
-    this.props.resources.unsubscribe(subscription);
+    this.props.resources.unsubscribe(subscription.handle);
   }
 
   public onDeleteItem<T extends {id: string}>(table: string, item: T) {

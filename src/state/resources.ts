@@ -1,3 +1,5 @@
+import * as uuid from 'uuid/v4';
+
 import { action, computed, observable } from 'mobx';
 
 import {
@@ -11,6 +13,7 @@ import { Subscription } from './subscription';
 import { TableState } from './table';
 
 interface IClientMessage {
+  handle?: string;
   type: string;
 }
 
@@ -109,18 +112,27 @@ export class ResourcesState {
   }
 
   @action public subscribe(table: string, filter?: string) {
+    const id = uuid();
+
     this.sendMessage(JSON.stringify({
+      handle: id,
       type: 'subscribe',
       table,
       filter,
     }));
+
+    return id;
   }
 
-  @action public unsubscribe(subscription: Subscription) {
-    this.sendMessage(JSON.stringify({
-      type: 'unsubscribe',
-      subscriptionId: subscription.id,
-    }));
+  @action public unsubscribe(handle: string) {
+    const subscription = this.subscriptions.find(s => s.handle === handle);
+
+    if (subscription) {
+      this.sendMessage(JSON.stringify({
+        type: 'unsubscribe',
+        subscriptionId: subscription.id,
+      }));
+    }
   }
 
   @action public create(table: string, data: any) {
@@ -176,6 +188,7 @@ export class ResourcesState {
   }
 
   @action private onSubscribeMessage(serverMessage: IClientSubscribeMessage) {
+    (serverMessage.subscription as any).handle = serverMessage.handle;
     this.subscriptions.push(serverMessage.subscription);
   }
 

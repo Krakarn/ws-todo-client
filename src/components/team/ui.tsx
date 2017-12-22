@@ -2,6 +2,8 @@ import * as React from 'react';
 
 import { observer } from 'mobx-react';
 
+import { GenericComponent } from '../generic';
+
 import { UserState } from '../../state/resource/user';
 import { TeamUIState } from '../../state/ui/team';
 
@@ -17,7 +19,7 @@ export interface ITeamUIComponentProps {
   generateUserComponent?(user: UserState): JSX.Element;
 }
 
-@observer export class TeamUI extends React.Component<ITeamUIComponentProps> {
+@observer export class TeamUI extends GenericComponent<ITeamUIComponentProps> {
   public static defaultProps: Partial<ITeamUIComponentProps> = {
     generateUserComponent: user => (
       <ul key={user.id} className='list-group'>
