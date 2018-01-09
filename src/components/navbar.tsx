@@ -18,6 +18,12 @@ export class Navbar extends React.Component {
             className='nav-item nav-link'
             activeClassName='active'
           >Team</NavLink>
+
+          <NavLink
+            to='/tasks'
+            className='nav-item nav-link'
+            activeClassName='active'
+          >Tasks</NavLink>
         </ul>
       </nav>
     );

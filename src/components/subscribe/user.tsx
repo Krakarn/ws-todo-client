@@ -4,7 +4,7 @@ import { observer } from 'mobx-react';
 
 import { UserState } from '../../state/resource/user';
 
-import { TodoItem } from './todo-item';
+import { Task } from './task';
 
 export interface ITableItemComponentProps {
   user: UserState;
@@ -33,9 +33,9 @@ export interface ITableItemComponentProps {
           />
         </li>
         {
-          this.props.user.todos.map(todo =>
-            <li className='list-group-item' key={todo.id}>
-              <TodoItem todo={todo} />
+          this.props.user.tasks.map(task =>
+            <li className='list-group-item' key={task.id}>
+              <Task task={task} />
             </li>
           )
         }

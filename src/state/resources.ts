@@ -7,7 +7,7 @@ import {
   MessageBusConnection,
 } from './message-bus-connection';
 
-import { TodoItemState } from './resource/todo-item';
+import { TaskState } from './resource/task';
 import { UserState } from './resource/user';
 import { Subscription } from './subscription';
 import { TableState } from './table';
@@ -79,7 +79,7 @@ export class ResourcesState {
   private messageBusConnections: MessageBusConnection[];
 
   constructor(
-    todoItems: TodoItemState[] = [],
+    tasks: TaskState[] = [],
     users: UserState[] = [],
   ) {
     this.tables = {
@@ -88,10 +88,10 @@ export class ResourcesState {
         [],
         UserState.fromJson,
       ),
-      todoItem: new TableState(
-        'todoItem',
+      task: new TableState(
+        'task',
         [],
-        TodoItemState.fromJson,
+        TaskState.fromJson,
       ),
     };
     this.subscriptions = [];

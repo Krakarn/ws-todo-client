@@ -1,6 +1,6 @@
 import { computed, observable } from 'mobx';
 
-export class TodoItemState {
+export class TaskState {
   public readonly id: string;
 
   @observable public name: string;
@@ -23,8 +23,8 @@ export class TodoItemState {
     this.done = done;
   }
 
-  public static fromJson(json: any): TodoItemState {
-    return new TodoItemState(
+  public static fromJson(json: any): TaskState {
+    return new TaskState(
       json.id,
       json.name,
       json.description,

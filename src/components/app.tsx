@@ -9,6 +9,7 @@ import { AppState } from '../state/app';
 import { Navbar } from './navbar';
 import { SubscribeUI } from './subscribe/ui';
 import { User } from './subscribe/user';
+import { TasksUI } from './tasks/ui';
 import { TeamUI } from './team/ui';
 
 export interface IAppComponentProps extends IUpdateOnNavigationComponentProps {
@@ -52,6 +53,12 @@ export class UpdateOnNavigation<T extends IUpdateOnNavigationComponentProps> ext
           <Route path='/team' render={props =>
             <TeamUI
               state={this.props.app.teamUI}
+              {...props}
+            />
+          }/>
+          <Route path='/tasks' render={props =>
+            <TasksUI
+              state={this.props.app.tasksUI}
               {...props}
             />
           }/>

@@ -27,10 +27,6 @@ export interface ITeamUIComponentProps {
           <p className='col-3'>Name:</p>
           <p className='col'>{user.name}</p>
         </li>
-        <li className='list-group-item'>
-          <p className='col-3'>Todos:</p>
-          <p className='col'>{user.todos.length}</p>
-        </li>
       </ul>
     ),
   };

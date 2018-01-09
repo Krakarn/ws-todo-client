@@ -1,25 +1,25 @@
 import { computed, observable } from 'mobx';
 
-import { TodoItemState } from './todo-item';
+import { TaskState } from './task';
 
 export class UserState {
   public readonly id: string;
 
   @observable public name: string;
-  @observable public todos: TodoItemState[];
+  @observable public tasks: TaskState[];
 
   @computed public get json(): any {
     return {
       id: this.id,
       name: this.name,
-      todos: this.todos.map(todo => todo.json),
+      tasks: this.tasks.map(task => task.json),
     };
   }
 
-  constructor(id: string, name: string, todos: TodoItemState[] = []) {
+  constructor(id: string, name: string, tasks: TaskState[] = []) {
     this.id = id;
     this.name = name;
-    this.todos = todos;
+    this.tasks = tasks;
   }
 
   public static fromJson(json: any): UserState {
