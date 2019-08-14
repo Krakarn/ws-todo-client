@@ -15,7 +15,7 @@ import { AppState } from './state/app';
 const browserHistory = createBrowserHistory();
 const routingStore = new RouterStore();
 
-const app = new AppState();
+const state = new AppState();
 const history = syncHistoryWithStore(browserHistory, routingStore);
 
 const container = document.createElement('div');
@@ -25,7 +25,7 @@ ReactDOM.render(
   (
     <Provider routing={routingStore}>
       <Router history={history}>
-        <App app={app} />
+        <App state={state} />
       </Router>
     </Provider>
   ),

@@ -6,6 +6,9 @@ import { RouterStore } from 'mobx-react-router';
 
 import { AppState } from '../state/app';
 
+import { GenericComponent } from './generic';
+
+import { LoginUI } from './login/ui';
 import { Navbar } from './navbar';
 import { SubscribeUI } from './subscribe/ui';
 import { User } from './subscribe/user';
@@ -13,7 +16,7 @@ import { TasksUI } from './tasks/ui';
 import { TeamUI } from './team/ui';
 
 export interface IAppComponentProps extends IUpdateOnNavigationComponentProps {
-  app: AppState;
+  state: AppState;
 }
 
 export interface IUpdateOnNavigationComponentProps {
@@ -45,20 +48,26 @@ export class UpdateOnNavigation<T extends IUpdateOnNavigationComponentProps> ext
         <Switch>
           <Route exact path='/' render={props =>
             <SubscribeUI
-              subscribeUI={this.props.app.subscribeUI}
-              resources={this.props.app.resources}
+              subscribeUI={this.props.state.subscribeUI}
+              resources={this.props.state.resources}
+              {...props}
+            />
+          }/>
+          <Route path='/login' render={props =>
+            <LoginUI
+              state={this.props.state.loginUI}
               {...props}
             />
           }/>
           <Route path='/team' render={props =>
             <TeamUI
-              state={this.props.app.teamUI}
+              state={this.props.state.teamUI}
               {...props}
             />
           }/>
           <Route path='/tasks' render={props =>
             <TasksUI
-              state={this.props.app.tasksUI}
+              state={this.props.state.tasksUI}
               {...props}
             />
           }/>
@@ -68,5 +77,13 @@ export class UpdateOnNavigation<T extends IUpdateOnNavigationComponentProps> ext
         </Switch>
       </div>
     );
+  }
+
+  public componentDidMount() {
+    GenericComponent.prototype.componentDidMount.call(this);
+  }
+
+  public componentWillUnmount() {
+    GenericComponent.prototype.componentWillUnmount.call(this);
   }
 }

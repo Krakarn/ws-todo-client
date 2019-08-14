@@ -6,7 +6,10 @@ export interface IGenericComponentProps<T> {
   state: T;
 }
 
-export class GenericComponent<T extends IGenericComponentProps<Partial<IComponentHooks>>, U = any> extends React.Component<T, U> {
+export class GenericComponent<
+  T extends IGenericComponentProps<Partial<IComponentHooks>>,
+  U = any
+> extends React.Component<T, U> {
   public componentDidMount() {
     this.props.state.mount();
   }

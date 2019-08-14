@@ -7,6 +7,7 @@ import {
   MessageBusConnection,
 } from './message-bus-connection';
 
+import { SessionState } from './resource/session';
 import { TaskState } from './resource/task';
 import { UserState } from './resource/user';
 import { Subscription } from './subscription';
@@ -78,20 +79,22 @@ export class ResourcesState {
 
   private messageBusConnections: MessageBusConnection[];
 
-  constructor(
-    tasks: TaskState[] = [],
-    users: UserState[] = [],
-  ) {
+  constructor() {
     this.tables = {
-      user: new TableState(
-        'user',
+      session: new TableState(
+        'session',
         [],
-        UserState.fromJson,
+        SessionState.fromJson,
       ),
       task: new TableState(
         'task',
         [],
         TaskState.fromJson,
+      ),
+      user: new TableState(
+        'user',
+        [],
+        UserState.fromJson,
       ),
     };
     this.subscriptions = [];
@@ -135,7 +138,7 @@ export class ResourcesState {
     }
   }
 
-  @action public create(table: string, data: any) {
+  @action public create<T>(table: string, data: Partial<T>) {
     this.sendMessage(JSON.stringify({
       type: 'create',
       table,
@@ -143,7 +146,7 @@ export class ResourcesState {
     }));
   }
 
-  @action public update(table: string, data: any) {
+  @action public update<T>(table: string, data: Partial<T>) {
     this.sendMessage(JSON.stringify({
       type: 'update',
       table,

@@ -49,7 +49,7 @@ export class MessageBusConnection {
 
     this.url = url;
 
-    this.input = new Rx.Subject();
+    this.input = new Rx.ReplaySubject(10);
     this.messagesSubscription = void 0;
     this.connectionStatusSubscription = void 0;
 
@@ -66,7 +66,7 @@ export class MessageBusConnection {
 
     const { messages, connectionStatus } = websocketConnect(
       this.url,
-      this.input
+      this.input,
     );
 
     if (this.messagesSubscription) {
